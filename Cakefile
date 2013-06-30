@@ -42,11 +42,7 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
   # watch css includes
   run 'banshee', 'public/css/_includes.css:public/css/vendor.css'
 
-  # server side coffeescript files
-  run 'coffee', '-o', 'lib/', '-wc', 'src/'
-
   # client side coffeescript files
-
   run 'coffee', '-o', 'public/js/lib/', '-wc', 'public/js/src/'
 
   # stylus
@@ -71,9 +67,6 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
 
   compileHandlebars()
 
-  # run server.js using Supervisor
-  run 'supervisor', ['server.js']
-
 task 'combine', 'Automatically combine files for dev', () ->
   
   paths =
@@ -87,19 +80,3 @@ task 'combine', 'Automatically combine files for dev', () ->
       d.push paths[i] + '/' + files[j]
 
     bundle d, 'public/js/lib/' + i + '.js'
-
-
-task 'build', 'Compress and combine javascript and CSS for production', () ->
-  
-  # compress and combine javascript
-  run 'banshee', '-c', 'public/js/lib:public/js/build.js'
-
-  # compress and combine css
-  run 'banshee', '-c','public/css/lib:public/css/build.css'
-
-  # compress and combine vendor javascript
-  run 'banshee', '-c', 'public/js/_includes.js:public/js/vendor.js'
-
-  # compress and combine vendor css
-  run 'banshee', '-c', 'public/css/_includes.css:public/css/vendor.css'
-  
