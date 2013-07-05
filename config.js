@@ -2,7 +2,7 @@
 /** Config for individual dev environment **/
 
 namespace = module.exports ? module.exports : window.CONFIG
-namespace = {
+module.exports = {
 	baseURI : '', //base URI for server ex. http://localhost
 	// PhoneGap Build
 	PGB : { 
