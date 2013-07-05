@@ -48,9 +48,10 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
   # stylus
   run 'stylus','-o', 'public/css/lib', '-w', 'public/css/src'
 
+  # pre-compile client-side templates
   templatesDir = 'public/js/templates/src'
   compileHandlebars = (template) ->
-    # pre-compile client-side templates
+    
     run 'handlebars', templatesDir, '-f', 'public/js/templates/templates.js'
     run 'uglifyjs', 'public/js/templates/templates.js', '-o','public/js/templates/templates.js'
     if template?
@@ -66,6 +67,7 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
           compileHandlebars(template)
 
   compileHandlebars()
+
 
 task 'combine', 'Automatically combine files for dev', () ->
   
