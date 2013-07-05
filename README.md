@@ -1,11 +1,10 @@
 # NullStrap PhoneGap
 ## A CoffeeScript / PhoneGap
 
-### Features
+### Assumptions
 
-* Cakefile for a single command install and dev setup
-* Watches folders for Stylus, CoffeeScript, and Handlebars changes
-* Bower support for easily adding client-side dependencies
+* You use CoffeeScript
+* You use PhoneGap build, each app pulling from Github
 
 ====================
 
