@@ -7,6 +7,7 @@
 
 * One code base for multiple environments (ex. dev, staging, prod apps)
 * A single command for pushing environment specific code to github and then building using PhoneGap Build
+* Automatically generate config.xml files for each environment
 
 ### Assumptions
 
