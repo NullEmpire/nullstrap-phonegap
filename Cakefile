@@ -1,6 +1,9 @@
 fs = require 'fs'
 flour = require 'flour'
 growl = require 'growl'
+pgb = require 'phonegap-build-api'
+async = require 'async'
+config = require 'config'
 {print} = require 'sys'
 {log, error} = console; print = log
 {spawn, exec} = require 'child_process'
@@ -79,3 +82,26 @@ task 'combine', 'Automatically combine files for dev', () ->
       d.push paths[i] + '/' + files[j]
 
     bundle d, 'public/js/lib/' + i + '.js'
+
+task 'build staging', '', () ->
+  buildPhoneGap(config.PGB.stagingAppID)
+
+task 'build prod', '', () ->
+  buildPhoneGap(config.PGB.prodAppID)
+
+buildPhoneGap = (appID, cb)
+  cb = cb ? () ->
+
+  pgb.auth { username: config.PGB.username, password: config.PGB.password }, (e, api) ->
+    api.get "/apps/#{appID}", (err, app) ->
+
+      console.log "Refreshing #{app.title}..."
+
+      api.put "/apps/#{app.id}}",options = {form: {data: {pull: true}}}, (e , data) ->
+        
+        console.log 'Pull Error : ', e if e
+
+        api.post "/apps/#{app.id}/build/", {form: {data: {platforms: ['ios', 'android','windows']}}}, (e, data) ->
+          console.log ' Build Error : ', e if e
+          console.log "Done refreshing app on ", new Date()
+          cb()
