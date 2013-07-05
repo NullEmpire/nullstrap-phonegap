@@ -115,7 +115,9 @@ task 'build', 'Build for production PhoneGap App', (options) ->
   console.log "Building environment : #{env}..."
 
   async.series [
+
     (cb) ->
+
       # write the proper JS config for current environment
       fs.readFile "env/#{env}/config.js", 'utf8', (err, data) ->
         
@@ -130,6 +132,7 @@ task 'build', 'Build for production PhoneGap App', (options) ->
           cb()
     ,
     (cb) ->
+
       # write the correct config.xml file
       fs.readFile "env/#{env}/config.xml", 'utf8', (err, data) ->
         if err
@@ -141,22 +144,24 @@ task 'build', 'Build for production PhoneGap App', (options) ->
           cb()
     ,
     (cb) ->
+
       # commit code to github repo
       exec 'git add .', (err) ->
         exec 'git commit -m "building production PhoneGap app"', () ->
           # build the phonegap app
           console.log 'configy', config
-          buildPhoneGap(config.PGB.appID, cb)
+          buildPhoneGap(config, cb)
+
   ], () ->
     console.log "Done."
 
 
-buildPhoneGap = (appID, cb) ->
+buildPhoneGap = (config, cb) ->
   cb = cb ? () ->
 
   pgb.auth { username : config.PGB.username, password : config.PGB.password }, (e, api) ->
 
-    api.get "/apps/#{appID}", (err, app) ->
+    api.get "/apps/#{config.PGB.appID}", (err, app) ->
 
       console.log "Refreshing #{app.title}..."
 
