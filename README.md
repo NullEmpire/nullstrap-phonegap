@@ -1,3 +1,4 @@
+# *** WORK IN PROGRESS ***
 # NullStrap PhoneGap
 ## A CoffeeScript / PhoneGap
 
