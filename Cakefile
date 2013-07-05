@@ -146,11 +146,19 @@ task 'build', 'Build for production PhoneGap App', (options) ->
     (cb) ->
 
       # commit code to github repo
-      exec 'git add .', (err) ->
-        exec 'git commit -m "building production PhoneGap app"', () ->
-          # build the phonegap app
-          console.log 'configy', config
-          buildPhoneGap(config, cb)
+      async.series [
+        (cb) ->
+          run 'git', 'add', '.'
+          cb()
+        ,
+        (cb) ->
+          run 'git','commit', '-m', '"building production PhoneGap app"'
+          cb()
+        ,
+        (cb) ->
+          # buildPhoneGap(config, cb)
+          cb()
+      ]
 
   ], () ->
     console.log "Done."
