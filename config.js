@@ -1,3 +1,3 @@
-window.config = {
+window.CONFIG = {
 	baseURI : '' //base URI for server
 }
