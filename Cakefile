@@ -16,9 +16,6 @@ task 'system', 'Install system dependancies ', () ->
   # install Dependencies (Run in sudo)
   run 'gem', 'install', 'terminal-notifier'
   run 'npm', 'install', '-g', 'bower'
-  run 'npm', 'install', '-g', 'express'
-  run 'npm', 'install', '-g', 'jade'
-  run 'npm', 'install', '-g', 'supervisor'
   run 'npm', 'install', '-g', 'banshee'
   run 'npm', 'install', '-g', 'stylus'
   run 'npm', 'install', '-g', 'handlebars'
