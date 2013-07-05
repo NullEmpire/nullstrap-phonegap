@@ -1,8 +1,10 @@
 # *** WORK IN PROGRESS ***
 # NullStrap PhoneGap
+
 ## A CoffeeScript / PhoneGap bootstrap
 
-### Features
+### Features / Goals
+
 * One code base for multiple environments (ex. dev, staging, prod apps)
 * A single command for pushing environment specific code to github and then building using PhoneGap Build
 
