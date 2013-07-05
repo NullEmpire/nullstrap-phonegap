@@ -119,7 +119,8 @@ task 'build', 'Build for production PhoneGap App', (options) ->
       # write the proper JS config for current environment
       fs.readFile "env/#{env}/config.js", 'utf8', (err, data) ->
         
-        console.log 'hi', require "./env/#{env}/config"
+        config = require "./env/#{env}/config"
+
         if err
           console.log err 
         
@@ -144,7 +145,7 @@ task 'build', 'Build for production PhoneGap App', (options) ->
       exec 'git add .', (err) ->
         exec 'git commit -m "building production PhoneGap app"', () ->
           # build the phonegap app
-          console.log config
+          console.log 'configy', config
           buildPhoneGap(config.PGB.appID, cb)
   ], () ->
     console.log "Done."
