@@ -1,5 +1,5 @@
-# NullStrap
-## A CoffeeScript / Express.js bootstrap
+# NullStrap PhoneGap
+## A CoffeeScript / PhoneGap
 
 ### Features
 
@@ -11,9 +11,7 @@
 
 ## Technologies
 
-* Express.js - http://expressjs.com/
 * Bower - http://twitter.github.com/bower/
-* Jade - http://jade-lang.com/
 * Handlebars - http://handlebarsjs.com/
 * CoffeeScript - http://coffeescript.org/
 * Banshee - http://imulus.github.com/banshee/
