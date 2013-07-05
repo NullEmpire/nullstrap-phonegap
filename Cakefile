@@ -3,7 +3,6 @@ flour = require 'flour'
 growl = require 'growl'
 pgb = require 'phonegap-build-api'
 async = require 'async'
-config = require './config'
 {print} = require 'sys'
 {log, error} = console; print = log
 {spawn, exec} = require 'child_process'
@@ -112,11 +111,15 @@ task 'combine', 'Automatically combine files for dev', () ->
 option '-e', '--env [ENV]', 'environment to build'
 task 'build', 'Build for production PhoneGap App', (options) ->
   env = options.env
+  config = {}
   console.log "Building environment : #{env}..."
+
   async.series [
     (cb) ->
       # write the proper JS config for current environment
       fs.readFile "env/#{env}/config.js", 'utf8', (err, data) ->
+        config = require "./env/#{env}/config.js"
+
         if err
           console.log err 
         
@@ -141,11 +144,11 @@ task 'build', 'Build for production PhoneGap App', (options) ->
       exec 'git add .', (err) ->
         exec 'git commit -m "building production PhoneGap app"', () ->
           # build the phonegap app
-          buildPhoneGap(config.PGB.prodAppID, cb)
-  ], ()->
+          buildPhoneGap(config.PGB.appID, cb)
+  ], () ->
     console.log "Done."
 
-    
+
 buildPhoneGap = (appID, cb) ->
   cb = cb ? () ->
 
