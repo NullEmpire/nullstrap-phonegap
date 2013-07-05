@@ -144,6 +144,7 @@ task 'build', 'Build for production PhoneGap App', (options) ->
       exec 'git add .', (err) ->
         exec 'git commit -m "building production PhoneGap app"', () ->
           # build the phonegap app
+          console.log config
           buildPhoneGap(config.PGB.appID, cb)
   ], () ->
     console.log "Done."
