@@ -119,7 +119,7 @@ task 'build', 'Build for production PhoneGap App', (options) ->
       # write the proper JS config for current environment
       fs.readFile "env/#{env}/config.js", 'utf8', (err, data) ->
         
-        console.log 'hi', "./env/#{env}/config"
+        console.log 'hi', require "./env/#{env}/config.js"
         if err
           console.log err 
         
