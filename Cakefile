@@ -55,7 +55,7 @@ task 'install', 'Install dependencies ', () ->
   ]
 
 task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
-  
+
   flour.minifiers.disable 'js'
   flour.silent true
   
@@ -93,6 +93,8 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
 
   compileHandlebars()
 
+  # Write the config files for dev
+  run 'cake', '-e', 'dev', 'build'
 
 task 'combine', 'Automatically combine files for dev', () ->
   
@@ -110,6 +112,7 @@ task 'combine', 'Automatically combine files for dev', () ->
 
 option '-e', '--env [ENV]', 'environment to build'
 task 'build', 'Build for production PhoneGap App', (options) ->
+ 
   env = options.env
   config = {}
   console.log "Building environment : #{env}..."
@@ -145,23 +148,27 @@ task 'build', 'Build for production PhoneGap App', (options) ->
     ,
     (cb) ->
 
-      # commit code to github repo
-      async.series [
-        (cb) ->
-          run 'git', 'add', '.'
+      if env isnt 'dev'
+        # commit code to github repo
+        async.series [
+          (cb) ->
+            run 'git', 'add', '.'
+            cb()
+          ,
+          (cb) ->
+            run 'git','commit', '-m', '"building production PhoneGap app"'
+            cb()
+          ,
+          (cb) ->
+            buildPhoneGap(config, cb)
+            cb()
+        ], () ->
           cb()
-        ,
-        (cb) ->
-          run 'git','commit', '-m', '"building production PhoneGap app"'
-          cb()
-        ,
-        (cb) ->
-          # buildPhoneGap(config, cb)
-          cb()
-      ]
+      else
+        cb()
 
   ], () ->
-    console.log "Done."
+    console.log "Done building environment configuration."
 
 
 buildPhoneGap = (config, cb) ->

@@ -8,6 +8,6 @@ namespace = {
 		username : '',
 		password : '',
 		// can be found at http://build.phonegap.com
-		appID : '326574846586549569'
+		appID : ''
 	}
 }
