@@ -1,19 +1,12 @@
 
 # Application class that instantiates everything
 window.Namespace = window.Namespace ? {}
-window.Namespace.views = window.Namespace.views ? {}
 
 jQuery ->
 	
 	class App
 
 		constructor : () ->
-
-		# this unrenders all views
-		unrender : ->
-			views = @gs.views
-			for i of views
-				views[i].unrender()
 
 		attachEvents : () ->
 

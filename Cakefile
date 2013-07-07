@@ -171,6 +171,8 @@ task 'build', 'Build for production PhoneGap App', (options) ->
     console.log "Done building environment configuration."
 
 
+# Tell http://build.phonegap.com to build the app
+
 buildPhoneGap = (config, cb) ->
   cb = cb ? () ->
 
