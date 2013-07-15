@@ -1,0 +1,16 @@
+{
+	"username":"my phonegap username",
+	"password":"my phonegap password",
+	"repo":"https://github.com/myapp.git",
+	"env":{
+		"dev": {
+			"title":"My App Dev"
+		},
+		"staging": {
+			"title":"My App Staging"
+		},
+		"prod": {
+			"title":"My App Prod"
+		}
+	}
+}
