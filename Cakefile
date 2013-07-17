@@ -210,6 +210,9 @@ buildPhoneGap = (cb) ->
     else if env isnt 'dev'
       options = {form : {data : {create_method : 'remote_repo', private : true, repo : pgbConfig.repo, title : pgbConfig.env[env].title}}}
 
+      if env isnt 'prod'
+        options.form.data.hydrates = true
+        
       api.post "/apps", options, (e, response) ->
         if e
           console.log e
