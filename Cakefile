@@ -166,7 +166,7 @@ task 'build', 'Build for production PhoneGap App', (options) ->
             run cb, 'git', 'add', '.'
           ,
           (cb) ->
-            run cb, 'git','commit', '-m', '"building '+env+' PhoneGap app"'
+            run cb, 'git','commit', '-m', '"Building '+env+' PhoneGap app"'
           ,
           (cb) ->
             run cb, 'git','push'
