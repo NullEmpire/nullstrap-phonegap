@@ -91,9 +91,10 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
   # pre-compile client-side templates
   templatesDir = 'public/js/templates/src'
 
-  compileHandlebars = (template) ->  
+  compileHandlebars = () ->
+    console.log 'compiling -> ', templatesDir
     run false, 'handlebars', templatesDir, '-f', 'public/js/templates/templates.js'
-    run false, 'uglifyjs', 'public/js/templates/templates.js', '-o','public/js/templates/templates.js'
+    # run false, 'uglifyjs', 'public/js/templates/templates.js', '-o','public/js/templates/templates.js'
 
   # watch client side templates
   templates = fs.readdirSync templatesDir
@@ -102,12 +103,14 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
     do (template) ->
       fs.watchFile template, (curr, prev) ->
         if +curr.mtime isnt +prev.mtime
-          compileHandlebars(template)
+          compileHandlebars()
 
   compileHandlebars()
 
   # Write the config files for dev
   run false, 'cake', '-e', 'dev', 'build'
+
+  run false, 'node', 'server.js'
 
 task 'combine', 'Automatically combine files for dev', () ->
   
@@ -189,7 +192,7 @@ buildPhoneGap = (cb) ->
 
   build = (api, appID) ->
 
-      console.log "Refreshing App..."
+      console.log "Refreshing App on build.phonegap.com ..."
 
       # update PGB from Github
       api.put "/apps/#{appID}}", {form: {data: {pull: true}}}, (e , data) ->
@@ -212,7 +215,7 @@ buildPhoneGap = (cb) ->
 
       if env isnt 'prod'
         options.form.data.hydrates = true
-        
+
       api.post "/apps", options, (e, response) ->
         if e
           console.log e

@@ -1,51 +1,26 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<title></title>
+		<title>NullStrap</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 		<link rel="stylesheet" href="public/css/vendor.css" />
 		<link rel="stylesheet" href="public/css/lib/main.css" />
-		<link href="public/js/kendo/styles/kendo.common.min.css" rel="stylesheet" />
-   		<link href="public/js/kendo/styles/kendo.default.min.css" rel="stylesheet" />
-    	<link href="public/js/kendo/styles/kendo.mobile.all.min.css" rel="stylesheet" />
+    	<script src="config/config.js"></script>
     	<script src="public/js/vendor.js"></script>
-    	<script src="public/js/kendo/js/kendo.all.min.js"></script>
-		<script src="public/js/config.js"></script>
 		<script src="public/js/templates/templates.js"></script>
-		<script src="public/js/lib/router.js"></script>
 		<script src="public/js/lib/app.js"></script>
-	</head> 
-	<body>
-		<!-- App UI Goes Here -->
-
-		<!-- Views -->
-		<div data-role="view" data-layout="main-layout" id="main" data-title="My App">
-	   		<ul data-role="listview" data-style="inset" data-type="group">
-	   			<li>hi</li>
-	   		</ul>
-   		</div>
-
-   		<!-- Layouts -->
-   		<div data-role="layout" data-id="main-layout">
-		    <header data-role="header">
-		        <div data-role="navbar">
-		            <a class="nav-button" data-align="left" data-role="backbutton">Back</a>
-		            <span data-role="view-title">My Contacts</span>
-		            <a data-align="right" data-role="button" class="nav-button" href="#index">button</a>
-		        </div>
-		    </header>
-		    <footer data-role="footer">
-		        <div data-role="tabstrip">
-		            <a data-icon="globe" href="#main">Button</a>
-		            <a data-icon="organize" href="#">Button</a>
-		            <a data-icon="contacts" href="#">Button</a>
-		            <a data-icon="settings" href="#">Button</a>
-		        </div>
-		    </footer>
-		</div>
-
+		<script src="public/js/lib/moduleloader.js"></script>
 		<script>
-			var app = new kendo.mobile.Application(document.body);
+			function onLoad(){
+				document.addEventListener("deviceready", onDeviceReady, true);
+			}
+			function onDeviceReady(){
+				window.init()
+			}
 		</script>
+	</head>
+	<body onload="onLoad()">
+			<!-- App UI Goes Here -->
+
 	</body>
 </html>

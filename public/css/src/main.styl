@@ -1,6 +1,58 @@
+// Mixins
+vendor(prop, args)
+	-webkit-{prop} args
+	-moz-{prop} args
+	-ms-{prop} args
+	-o-{prop} args
+	{prop} args
+background-linear-gradient(startPoint, startColor, startInterval, endColor, endInterval)
+	background-color startColor
+	background-image -webkit-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -moz-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -ms-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image -o-linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+	background-image linear-gradient(startPoint, startColor startInterval, endColor endInterval)
+border-radius()
+	vendor('border-radius', arguments)
+background-image()
+	vendor('background-image', arguments)
+transition()
+	vendor('transition', arguments)
+transform()
+	vendor('transform', arguments)
 
+html, body
+	-webkit-tap-highlight-color:rgba(0,0,0,0)
 body
 	font-family : "HelveticaNeue-Lite", Helvetica
 	color:#333
 	font-weight:200
+	overflow-x: hidden;
+
+#login-view
+	&.error
+		input[type="email"], input[type="password"]
+			border-color:red
+
+[data-role="header"]
+	position:relative
+	left:0
+	right:0
+	z-index:1000
+	top:-1px
+	zoom:1
+
+[data-role="page"]
+	position:absolute;
+	top:0
+	right:0
+	bottom:0
+	left:0
+	overflow-y:scroll
+	margin-top:50px;
+	display:none
+	-webkit-overflow-scrolling: touch
+	&.show
+		display:block
+	
 
