@@ -94,7 +94,7 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
   templatesDir = 'public/js/templates/src'
   compileHandlebars = (template) ->
     # pre-compile client-side templates
-    run 'handlebars', templatesDir, '-f', 'public/js/templates/templates.js'
+    run false, 'handlebars', templatesDir, '-f', 'public/js/templates/templates.js'
 
    # watch client side templates
   templates = fs.readdirSync templatesDir
