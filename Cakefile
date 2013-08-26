@@ -9,7 +9,21 @@ async = require 'async'
 # default the environment to dev
 env = 'dev'
 
-run = (cb, name, args...) ->
+run = (name, args...) ->
+  
+  if cb is false
+    cb = () ->
+
+  cb = cb ? () ->
+
+  proc = spawn(name, args)
+  proc.stdout.on('data', (buffer) -> print buffer if buffer = buffer.toString().trim())
+  proc.stderr.on('data', (buffer) -> error buffer if buffer = buffer.toString().trim())
+  proc.on 'exit', (status) ->
+    process.exit(1) if status isnt 0
+    cb()
+
+command = (cb, name, args...) ->
   
   if cb is false
     cb = () ->
@@ -33,27 +47,27 @@ task 'system', 'Install system dependencies ', () ->
   # install Dependencies (Run in sudo)
   async.series [
     (cb) -> 
-      run false, 'gem', 'install', 'terminal-notifier'
+      run 'gem', 'install', 'terminal-notifier'
       cb()
     ,
     (cb) -> 
-      run false, 'npm', 'install', '-g', 'bower'
+      run 'npm', 'install', '-g', 'bower'
       cb()
     ,
     (cb) -> 
-      run false, 'npm', 'install', '-g', 'banshee'
+      run 'npm', 'install', '-g', 'banshee'
       cb()
     ,
     (cb) ->  
-      run false, 'npm', 'install', '-g', 'stylus'
+      run 'npm', 'install', '-g', 'stylus'
       cb()
     ,
     (cb) -> 
-      run false, 'npm', 'install', '-g', 'handlebars'
+      run 'npm', 'install', '-g', 'handlebars'
       cb()
     ,
     (cb) -> 
-      run false, 'npm', 'install', '-g', 'uglify-js'
+      run 'npm', 'install', '-g', 'uglify-js'
       cb()
   ]
 
@@ -61,40 +75,39 @@ task 'install', 'Install dependencies ', () ->
 
   async.series [
       (cb) -> 
-        run false, 'npm', 'install'
+        run 'npm', 'install'
         cb()
       ,
       (cb) -> 
-        run false, 'bower', 'install'
+        run 'bower', 'install'
         cb()
   ]
 
 task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
 
   flour.minifiers.disable 'js'
-  flour.silent true
-  
-  watch 'public/js/lib', -> invoke 'combine'  
+  # flour.silent true
 
-  # watch js includes
-  run false, 'banshee','public/js/_includes.js:public/js/vendor.js'
+  invoke 'build:styles'
+  invoke 'build:coffeescript'
 
-  # watch css includes
-  run false, 'banshee', 'public/css/_includes.css:public/css/vendor.css'
+  # watch vendor js includes
+  run 'banshee','public/js/_includes.js:public/js/vendor.js'
+
+  # watch vendor css includes
+  run 'banshee','public/css/_includes.css:public/css/vendor.css'
 
   # client side coffeescript files
-  run false, 'coffee', '-o', 'public/js/lib/', '-wc', 'public/js/src/'
+  watch 'public/js/src/*', -> invoke 'build:coffeescript'
 
   # stylus
-  run false, 'stylus','-o', 'public/css/lib', '-w', 'public/css/src'
+  watch 'public/css/src/*', -> invoke 'build:styles'
 
   # pre-compile client-side templates
   templatesDir = 'public/js/templates/src'
-
-  templatesDir = 'public/js/templates/src'
   compileHandlebars = (template) ->
     # pre-compile client-side templates
-    run false, 'handlebars', templatesDir, '-f', 'public/js/templates/templates.js'
+    run 'handlebars', templatesDir, '-f', 'public/js/templates/templates.js'
 
    # watch client side templates
   templates = fs.readdirSync templatesDir
@@ -107,24 +120,25 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
   compileHandlebars()
 
   # Write the config files for dev
-  run false, 'cake', '-e', 'dev', 'build'
+  run 'cake', '-e', 'dev', 'build'
 
-  run false, 'node', 'server.js'
+  run 'node', 'server.js'
 
-task 'combine', 'Automatically combine files for dev', () ->
-  
-  paths =
-    models : 'public/js/lib/models'
-    views : 'public/js/lib/views'
-  
-  for i of paths
-    d = []
-    files = fs.readdirSync paths[i]
-    for j in [0...files.length]
-      d.push paths[i] + '/' + files[j]
+task 'build:styles', ->
+  compile 'public/css/src/*', 'public/css/lib/*'
+  invoke 'bundle:styles'
 
-    bundle d, 'public/js/lib/' + i + '.js'
+task 'bundle:styles', ->
+  bundle 'public/css/lib/*.css', 'public/css/build.css'
 
+task 'build:coffeescript', ->
+  compile 'public/js/src/*', 'public/js/lib'
+  invoke 'bundle:coffeescript'
+
+task 'bundle:coffeescript', ->
+  bundle 'public/js/lib/*.js', 'public/js/build.js'
+
+# Example cake -e staging build
 option '-e', '--env [ENV]', 'environment to build'
 task 'build', 'Build for production PhoneGap App', (options) ->
 
@@ -165,13 +179,13 @@ task 'build', 'Build for production PhoneGap App', (options) ->
         # commit code to github repo
         async.series [
           (cb) ->
-            run cb, 'git', 'add', '.'
+            command cb, 'git', 'add', '.'
           ,
           (cb) ->
-            run cb, 'git','commit', '-m', '"Building '+env+' PhoneGap app"'
+            command cb, 'git','commit', '-m', '"Building '+env+' PhoneGap app"'
           ,
           (cb) ->
-            run cb, 'git','push'
+            command cb, 'git','push'
           ,(cb) ->
             buildPhoneGap(cb)
 
