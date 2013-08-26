@@ -4,6 +4,7 @@
   "dependencies": {
     "jquery": "*",
     "underscore": "*",
-    "bootstrap": "*"
+    "bootstrap": "*",
+    "fastclick": "~0.6.9"
   }
 }
