@@ -88,8 +88,8 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
   flour.minifiers.disable 'js'
   # flour.silent true
 
-  invoke 'build:styles'
-  invoke 'build:coffeescript'
+  # invoke 'build:styles'
+  # invoke 'build:coffeescript'
 
   # watch vendor js includes
   run 'banshee','public/js/_includes.js:public/js/vendor.js'
@@ -97,11 +97,10 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
   # watch vendor css includes
   run 'banshee','public/css/_includes.css:public/css/vendor.css'
 
-  # client side coffeescript files
-  watch 'public/js/src/*', -> invoke 'build:coffeescript'
+  run 'coffee', '-o', 'public/js/lib/', '-wc', 'public/js/src/'
 
   # stylus
-  watch 'public/css/src/*', -> invoke 'build:styles'
+  run 'stylus','-o', 'public/css/lib', '-w', 'public/css/src'
 
   # pre-compile client-side templates
   templatesDir = 'public/js/templates/src'
@@ -124,19 +123,6 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
 
   run 'node', 'server.js'
 
-task 'build:styles', ->
-  compile 'public/css/src/*', 'public/css/lib/*'
-  invoke 'bundle:styles'
-
-task 'bundle:styles', ->
-  bundle 'public/css/lib/*.css', 'public/css/build.css'
-
-task 'build:coffeescript', ->
-  compile 'public/js/src/*', 'public/js/lib'
-  invoke 'bundle:coffeescript'
-
-task 'bundle:coffeescript', ->
-  bundle 'public/js/lib/*.js', 'public/js/build.js'
 
 # Example cake -e staging build
 option '-e', '--env [ENV]', 'environment to build'
