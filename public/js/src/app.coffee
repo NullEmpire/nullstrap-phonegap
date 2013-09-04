@@ -8,6 +8,7 @@ class App
 		self = @
 		@baseURI = window.CONFIG.baseURI
 		@attachEvents()
+		@router = new window.Namespace.Router()
 
 	renderViews : () ->
 		$body = $('body')
@@ -102,4 +103,6 @@ class App
 
 window.Namespace.App = App
 
-
+$ ->
+	window.init = () ->
+		app = new window.Namespace.App()

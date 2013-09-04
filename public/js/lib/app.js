@@ -11,6 +11,7 @@
       self = this;
       this.baseURI = window.CONFIG.baseURI;
       this.attachEvents();
+      this.router = new window.Namespace.Router();
     }
 
     App.prototype.renderViews = function() {
@@ -133,5 +134,13 @@
   })();
 
   window.Namespace.App = App;
+
+  $(function() {
+    return window.init = function() {
+      var app;
+
+      return app = new window.Namespace.App();
+    };
+  });
 
 }).call(this);
