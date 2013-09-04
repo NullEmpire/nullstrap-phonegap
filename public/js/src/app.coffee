@@ -41,7 +41,7 @@ class App
 
 		@hash data, (data) ->
 			self.request {
-				url : url
+				url : self.baseURI + url
 				data : data
 				type : 'get'
 				success : cb
@@ -58,7 +58,7 @@ class App
 
 		@hash data, (data) ->
 			self.request {
-				url : url
+				url : self.baseURI + url
 				data : data
 				type : 'post'
 				success : cb
