@@ -165,7 +165,7 @@ task 'build', 'Build for production PhoneGap App', (options) ->
         # commit code to github repo
         async.series [
           (cb) ->
-            command cb, 'git', 'add', '.'
+            command cb, 'git', 'add', '-A'
           ,
           (cb) ->
             command cb, 'git','commit', '-m', '"Building '+env+' PhoneGap app"'
