@@ -1,7 +1,7 @@
 fs = require 'fs'
-flour = require 'flour'
 pgb = require 'phonegap-build-api'
 async = require 'async'
+compressor = require('yuicompressor')
 {print} = require 'sys'
 {log, error} = console; print = log
 {spawn, exec} = require 'child_process'
@@ -9,28 +9,9 @@ async = require 'async'
 # default the environment to dev
 env = 'dev'
 
-run = (name, args...) ->
-  
-  if cb is false
-    cb = () ->
-
+run = (name, command, cb) ->
   cb = cb ? () ->
-
-  proc = spawn(name, args)
-  proc.stdout.on('data', (buffer) -> print buffer if buffer = buffer.toString().trim())
-  proc.stderr.on('data', (buffer) -> error buffer if buffer = buffer.toString().trim())
-  proc.on 'exit', (status) ->
-    process.exit(1) if status isnt 0
-    cb()
-
-command = (cb, name, args...) ->
-  
-  if cb is false
-    cb = () ->
-
-  cb = cb ? () ->
-
-  proc = spawn(name, args)
+  proc = spawn(name, command.split(' '))
   proc.stdout.on('data', (buffer) -> print buffer if buffer = buffer.toString().trim())
   proc.stderr.on('data', (buffer) -> error buffer if buffer = buffer.toString().trim())
   proc.on 'exit', (status) ->
@@ -40,6 +21,12 @@ command = (cb, name, args...) ->
 readJSON = (path) ->
   return fs.readFileSync path, 'utf8'
 
+# deal with errors from child processes
+exerr  = (err, sout,  serr)->
+  process.stdout.write err  if err
+  process.stdout.write sout if sout
+  process.stdout.write serr if serr
+
 pgbConfig = JSON.parse readJSON './config/pgb.json'
 
 task 'system', 'Install system dependencies ', () ->
@@ -47,66 +34,51 @@ task 'system', 'Install system dependencies ', () ->
   # install Dependencies (Run in sudo)
   async.series [
     (cb) -> 
-      run 'gem', 'install', 'terminal-notifier'
-      cb()
+      run 'npm', 'install -g bower', cb
     ,
     (cb) -> 
-      run 'npm', 'install', '-g', 'bower'
-      cb()
-    ,
-    (cb) -> 
-      run 'npm', 'install', '-g', 'banshee'
-      cb()
+      run 'npm', 'install -g banshee', cb
     ,
     (cb) ->  
-      run 'npm', 'install', '-g', 'stylus'
-      cb()
+      run 'npm', 'install -g stylus', cb
     ,
     (cb) -> 
-      run 'npm', 'install', '-g', 'handlebars'
-      cb()
+      run 'npm', 'install -g handlebars', cb
     ,
     (cb) -> 
-      run 'npm', 'install', '-g', 'uglify-js'
-      cb()
+      run 'npm', 'install -g uglify-js', cb
   ]
 
 task 'install', 'Install dependencies ', () ->
 
   async.series [
       (cb) -> 
-        run 'npm', 'install'
-        cb()
+        run 'npm', 'install', cb
       ,
       (cb) -> 
-        run 'bower', 'install'
-        cb()
+        run 'bower', 'install', cb
   ]
 
 task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
 
-  flour.minifiers.disable 'js'
-  # flour.silent true
-
-  # invoke 'build:styles'
-  # invoke 'build:coffeescript'
-
-  # watch vendor js includes
+  # combine vendor includes
   run 'banshee','public/js/_includes.js:public/js/vendor.js'
 
-  # watch vendor css includes
+  # combine css includes
   run 'banshee','public/css/_includes.css:public/css/vendor.css'
 
-  run 'coffee', '-o', 'public/js/lib/', '-wc', 'public/js/src/'
-
   # stylus
-  run 'stylus','-o', 'public/css/lib', '-w', 'public/css/src'
+  run 'stylus','-o public/css/lib -w public/css/src'
+
+  run 'coffee', '--join public/js/build.js --watch --compile public/js/src'
+
+  run 'coffee', '--join public/js/build.js --compile public/js/src/'
 
   # pre-compile client-side templates
   templatesDir = 'public/js/templates/src'
   compileHandlebars = (template) ->
     # pre-compile client-side templates
-    run 'handlebars', templatesDir, '-f', 'public/js/templates/templates.js'
+    run 'handlebars', templatesDir + ' -f public/js/templates/templates.js'
 
    # watch client side templates
   templates = fs.readdirSync templatesDir
@@ -119,10 +91,8 @@ task 'dev', 'Watch src/ for changes, compile, then output to lib/ ', () ->
   compileHandlebars()
 
   # Write the config files for dev
-  run 'cake', '-e', 'dev', 'build'
-
-  run 'node', 'server.js'
-
+  run 'cake', '-e dev build', () ->
+    run 'node', 'server.js'
 
 # Example cake -e staging build
 option '-e', '--env [ENV]', 'environment to build'
@@ -133,6 +103,11 @@ task 'build', 'Build for production PhoneGap App', (options) ->
 
   async.series [
 
+    (cb) ->
+      run 'cake', 'compress', () ->
+        cb()
+
+    ,
     (cb) ->
 
       # write the proper JS config for current environment
@@ -165,13 +140,13 @@ task 'build', 'Build for production PhoneGap App', (options) ->
         # commit code to github repo
         async.series [
           (cb) ->
-            command cb, 'git', 'add', '-A'
+            run 'git', 'add -A', cb
           ,
           (cb) ->
-            command cb, 'git','commit', '-m', '"Building '+env+' PhoneGap app"'
+            run 'git', 'commit -m "Building-'+env+'-PhoneGap"', cb
           ,
           (cb) ->
-            command cb, 'git','push'
+            run 'git', 'push', cb
           ,(cb) ->
             buildPhoneGap(cb)
 
@@ -230,8 +205,12 @@ buildPhoneGap = (cb) ->
             
             build(api, response.id)
 
-
-
-
+task 'compress', 'compress and minify files', () ->
+  # combine vendor includes
+  run 'banshee', '-c public/js/_includes.js:public/js/vendor.js'
+  # combine css includes
+  run 'banshee', '-c public/css/_includes.css:public/css/vendor.css'
+  # combine js
+  run 'banshee', '-c public/js/lib:public/js/build.js'
 
 
